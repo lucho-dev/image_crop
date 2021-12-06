@@ -18,6 +18,7 @@ class Crop extends StatefulWidget {
   final double? aspectRatio;
   final double maximumScale;
   final bool alwaysShowGrid;
+  final bool isStatic;
   final ImageErrorListener? onImageError;
   final BoxShape shape;
 
@@ -29,6 +30,7 @@ class Crop extends StatefulWidget {
     this.alwaysShowGrid = false,
     this.onImageError,
     this.shape = BoxShape.rectangle,
+    this.isStatic = false,
   }) : super(key: key);
 
   Crop.file(
@@ -40,6 +42,7 @@ class Crop extends StatefulWidget {
     this.alwaysShowGrid = false,
     this.onImageError,
     this.shape = BoxShape.rectangle,
+    this.isStatic = false,
   })  : image = FileImage(file, scale: scale),
         super(key: key);
 
@@ -53,6 +56,7 @@ class Crop extends StatefulWidget {
     this.alwaysShowGrid = false,
     this.onImageError,
     this.shape = BoxShape.rectangle,
+    this.isStatic = false,
   })  : image = AssetImage(assetName, bundle: bundle, package: package),
         super(key: key);
 
@@ -197,6 +201,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
                 scale: _scale,
                 active: _activeController.value,
                 shape: widget.shape,
+                isStatic: widget.isStatic,
               ),
             ),
           ),
@@ -204,6 +209,8 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
       );
 
   void _activate() {
+    if (widget.isStatic) return;
+
     _activeController.animateTo(
       1.0,
       curve: Curves.fastOutSlowIn,
@@ -561,6 +568,8 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
         return;
       }
 
+      if (widget.isStatic) return;
+
       final delta = details.focalPoint - _lastFocalPoint;
       _lastFocalPoint = details.focalPoint;
 
@@ -630,6 +639,7 @@ class _CropPainter extends CustomPainter {
   final double scale;
   final double active;
   final BoxShape shape;
+  final bool isStatic;
 
   _CropPainter({
     required this.image,
@@ -639,6 +649,7 @@ class _CropPainter extends CustomPainter {
     required this.scale,
     required this.active,
     required this.shape,
+    required this.isStatic,
   });
 
   @override
@@ -720,9 +731,11 @@ class _CropPainter extends CustomPainter {
           paint);
     }
 
-    if (boundaries.isEmpty == false) {
-      _drawGrid(canvas, boundaries);
-      _drawHandles(canvas, boundaries);
+    if (!isStatic) {
+      if (boundaries.isEmpty == false) {
+        _drawGrid(canvas, boundaries);
+        _drawHandles(canvas, boundaries);
+      }
     }
 
     canvas.restore();
