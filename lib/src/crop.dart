@@ -67,7 +67,7 @@ class Crop extends StatefulWidget {
       context.findAncestorStateOfType<CropState>();
 }
 
-class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
+class CropState extends State<Crop> with TickerProviderStateMixin implements Drag {
   final _surfaceKey = GlobalKey();
 
   late final AnimationController _activeController;
@@ -108,6 +108,20 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
 
   // Counting pointers(number of user fingers on screen)
   int pointers = 0;
+
+  void cancel() {
+    // implement cancel
+  }
+
+  @override
+  void end(DragEndDetails details) {
+    // implement end
+  }
+
+  @override
+  void update(DragUpdateDetails details) {
+    // implement update
+  }
 
   @override
   void initState() {
